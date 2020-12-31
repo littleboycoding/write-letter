@@ -19,7 +19,7 @@ function App() {
       <Router basename={"/"}>
         <Switch>
           <Route path="/welcome" component={Welcome} />
-          <Route exact path="/" component={Home} />
+          <Route path="/" component={Home} />
           <Redirect to="/" />
         </Switch>
       </Router>

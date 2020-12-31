@@ -27,7 +27,7 @@ const WelcomeStyled = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  font-size: 1.5em;
+  font-size: calc(1vw + 1vh + 4px);
 
   .welcome_title {
     font-size: 1.5em;
@@ -36,6 +36,8 @@ const WelcomeStyled = styled.div`
     margin: 15px;
   }
 `;
+
+const Hint = styled.span``;
 
 const Form = styled.form`
   animation: ${FadeInKeyframes} 2s;
@@ -95,7 +97,7 @@ function Welcome() {
     <WelcomeStyled>
       <span className="welcome_title">Welcome to Write Letter</span>
       <Form onSubmit={onSubmit}>
-        <span>Tell us your name (you don't have to)</span>
+        <Hint>Tell us your name (you don't have to)</Hint>
         <NameTextbox value={name} onChange={onNameChange} />
         <SubmitButton value={name === "" ? "Continue as anonymous" : "Enter"} />
       </Form>

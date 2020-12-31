@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.6",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
@@ -15,6 +16,7 @@
     "@types/react-dom": "^16.9.10",
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.7",
+    "graphql": "^15.4.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",

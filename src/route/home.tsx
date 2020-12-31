@@ -1,9 +1,18 @@
 import React from "react";
 import styled from "styled-components";
-import { Redirect } from "react-router-dom";
+import { Link, Redirect, Route } from "react-router-dom";
+import DialogContainer from "../dialog";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPencilAlt, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+
+import { gql, useQuery } from "@apollo/client";
+
+interface Letter {
+  id: string;
+  content: string;
+  writer: string;
+}
 
 const Container = styled.div`
   display: grid;
@@ -19,12 +28,12 @@ const Header = styled.div`
   justify-content: space-between;
   font-weight: bold;
   font-size: 1.1em;
-  box-shadow: 0px 0px 2px 1px #444;
+  // box-shadow: 0px 0px 2px 1px #444;
 `;
 
 const Title = styled.span``;
 const Write = styled(FontAwesomeIcon).attrs(() => ({
-  icon: faPlus,
+  icon: faPencilAlt,
 }))`
   background-color: #444;
   border: none;
@@ -68,55 +77,80 @@ const Letter = styled.div`
   }
 `;
 
-function User() {
+const User = styled.div`
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  &:hover {
+    background-color: #666;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    padding: 5px 10px;
+    border-radius: 3px;
+  }
+`;
+
+function UserStyled() {
   const Name = window.localStorage.getItem("username");
 
   return (
-    <span>
-      <FontAwesomeIcon icon={faUserAlt} /> <span>{Name}</span>
-    </span>
+    <User>
+      <Link to="/username">
+        <FontAwesomeIcon icon={faUserAlt} /> <span>{Name}</span>
+      </Link>
+    </User>
   );
 }
 
-const firstMessage = `
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.`;
-const LetterList = [
-  <Letter>
-    {firstMessage}
-    <span className="user">Thanawat Yodnil</span>
-    <span className="date">On 30 December 2020, At 23:14</span>
-  </Letter>,
-  <Letter>
-    {firstMessage}
-    <span className="user">Thanawat Yodnil</span>
-    <span className="date">On 30 December 2020, At 23:14</span>
-  </Letter>,
-  <Letter>
-    {firstMessage}
-    <span className="user">Thanawat Yodnil</span>
-    <span className="date">On 30 December 2020, At 23:14</span>
-  </Letter>,
-  <Letter>
-    {firstMessage}
-    <span className="user">Thanawat Yodnil</span>
-    <span className="date">On 30 December 2020, At 23:14</span>
-  </Letter>,
-];
+const GET_LETTERS = gql`
+  query GET_LETTERS {
+    letters {
+      id
+      content
+      writer
+    }
+  }
+`;
 
 function Home() {
+  const { data, loading, error } = useQuery<{ letters: Letter[] }>(GET_LETTERS);
+
+  if (error) return <span>{error.message}</span>;
+
   if (!window.localStorage.getItem("username"))
     return <Redirect to="/welcome" />;
 
-  return (
-    <Container>
-      <Header>
-        <Title>Write Letter</Title>
-        <User />
-        <Write />
-      </Header>
-      <LetterContainer>{LetterList}</LetterContainer>
-    </Container>
-  );
+  if (data && !loading) {
+    console.log(data);
+    const LetterList =
+      data.letters?.length > 0
+        ? data.letters.map((letter: Letter) => (
+            <Letter key={letter.id}>
+              {letter.content}
+              <span className="user">{letter.writer}</span>
+              <span className="date">On 30 December 2020, At 23:14</span>
+            </Letter>
+          ))
+        : [];
+
+    return (
+      <Container>
+        <Header>
+          <Title>Write Letter</Title>
+          <UserStyled />
+          <Link to="/write">
+            <Write />
+          </Link>
+        </Header>
+        <LetterContainer>{LetterList}</LetterContainer>
+        <Route path={`/:method`} component={DialogContainer} />
+      </Container>
+    );
+  }
+
+  return <span>Loading</span>;
 }
 
 export default Home;
