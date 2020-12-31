@@ -22,7 +22,7 @@ const Header = styled.div`
   box-shadow: 0px 0px 2px 1px #444;
 `;
 
-const Title = styled.span``; //Nothing for now
+const Title = styled.span``;
 const Write = styled(FontAwesomeIcon).attrs(() => ({
   icon: faPlus,
 }))`
