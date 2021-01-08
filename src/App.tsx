@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -6,8 +6,7 @@ import {
   Switch,
 } from "react-router-dom";
 
-const Welcome = lazy(() => import("./route/welcome"));
-const Home = lazy(() => import("./route/home"));
+import { Home, Welcome } from "./route/route";
 
 function Loading() {
   return <span>Loading</span>;
@@ -20,6 +19,7 @@ function App() {
         <Switch>
           <Route path="/welcome" component={Welcome} />
           <Route path="/" component={Home} />
+
           <Redirect to="/" />
         </Switch>
       </Router>
