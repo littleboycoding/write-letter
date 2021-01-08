@@ -152,34 +152,34 @@ function InfoContainerStyled({
     onCompleted() {
       commentSetter("");
     },
-    // @ts-ignored
     update(cache, { data: newData }) {
-      cache.modify({
-        id: cache.identify({ __typename: "Letter", id: data.id }),
-        fields: {
-          getComments(existingRef = { comments: [], limit: 5 }) {
-            const ref = cache.writeFragment({
-              data: newData.writeComment,
-              fragment: gql`
-                fragment NEW_COMMENT on Comment {
-                  id
-                  letterId
-                  content
-                  commenter
-                  date
-                }
-              `,
-            });
+      if (newData)
+        cache.modify({
+          id: cache.identify({ __typename: "Letter", id: data.id }),
+          fields: {
+            getComments(existingRef = { comments: [], limit: 5 }) {
+              const ref = cache.writeFragment({
+                data: newData.writeComment,
+                fragment: gql`
+                  fragment NEW_COMMENT on Comment {
+                    id
+                    letterId
+                    content
+                    commenter
+                    date
+                  }
+                `,
+              });
 
-            const newRef: Reference[] = [ref, ...existingRef.comments];
+              const newRef: Reference[] = [ref, ...existingRef.comments];
 
-            return {
-              ...existingRef,
-              comments: newRef,
-            };
+              return {
+                ...existingRef,
+                comments: newRef,
+              };
+            },
           },
-        },
-      });
+        });
     },
   });
 

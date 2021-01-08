@@ -92,40 +92,42 @@ function WriteFormStyled() {
     WRITE_LETTER_TYPES.WRITE_LETTER,
     WRITE_LETTER_TYPES.WRITE_LETTERVariables
   >(WRITE_LETTER, {
-    // @ts-ignore
     update(cache, { data }) {
-      cache.modify({
-        fields: {
-          getLetters(exisitngLetters = { offset: 0, limit: 10, letters: [] }) {
-            if (data.writeLetter.method === "paper_plane")
-              return { ...exisitngLetters };
+      if (data)
+        cache.modify({
+          fields: {
+            getLetters(
+              exisitngLetters = { offset: 0, limit: 10, letters: [] }
+            ) {
+              if (data.writeLetter.method === "paper_plane")
+                return { ...exisitngLetters };
 
-            const { writeLetter } = data;
-            const newLettersRef = cache.writeFragment({
-              data: writeLetter,
-              fragment: gql`
-                fragment NewLetters on Letter {
-                  id
-                  content
-                  writer
-                  date
-                }
-              `,
-            });
+              const { writeLetter } = data;
+              const newLettersRef = cache.writeFragment({
+                data: writeLetter,
+                fragment: gql`
+                  fragment NewLetters on Letter {
+                    id
+                    content
+                    writer
+                    date
+                  }
+                `,
+              });
 
-            const letters: Reference[] = [
-              newLettersRef,
-              ...exisitngLetters.letters,
-            ];
+              const letters: Reference[] = [
+                newLettersRef,
+                ...exisitngLetters.letters,
+              ];
 
-            return {
-              ...exisitngLetters,
-              offset: letters.length,
-              letters,
-            };
+              return {
+                ...exisitngLetters,
+                offset: letters.length,
+                letters,
+              };
+            },
           },
-        },
-      });
+        });
     },
   });
 
