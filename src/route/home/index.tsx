@@ -283,9 +283,6 @@ function Home() {
       cursor: null,
       limit: 10,
     },
-    onCompleted(data) {
-      console.log(data);
-    },
   });
 
   if (error) return <span>{error.message}</span>;

@@ -62,9 +62,14 @@ const Dialog = styled.div`
   z-index: 1;
 
   div.inner {
+    max-width: 100%;
     padding: 10px;
     border-radius: 10px;
     background-color: white;
+  }
+
+  div.inner > * {
+    box-sizing: border-box;
   }
 `;
 

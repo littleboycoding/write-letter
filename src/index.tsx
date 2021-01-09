@@ -7,9 +7,11 @@ import { ApolloClient, ApolloProvider } from "@apollo/client";
 
 import cache from "./cache";
 
+const ApolloAddress = process.env.NODE_ENV === "development" ?  "http://localhost:4000/graphql" : "https://write-letter-ay2j8.ondigitalocean.app/apollo"
+
 const client = new ApolloClient({
   cache,
-  uri: "http://localhost:4000/graphql",
+  uri: ApolloAddress,
 });
 
 ReactDOM.render(
