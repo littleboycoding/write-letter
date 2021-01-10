@@ -1,0 +1,10 @@
+spec:
+ name: write-letter
+ static-sites:
+ - git:
+     branch: main
+     repo_clone_url: https://github.com/littleboycoding/write-letter.git
+     name: write-letter
+   envs:
+   - key: APOLLO_URL
+     scope: BUILD_TIME
