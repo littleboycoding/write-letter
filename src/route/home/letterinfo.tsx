@@ -336,7 +336,7 @@ function LetterInfo() {
     });
   }
 
-  // if (error) return <span>{error.message}</span>;
+  if (error) return <span>{error.message}</span>;
   if (error) return <Redirect to="/" />;
 
   if (!loading) {
@@ -346,6 +346,7 @@ function LetterInfo() {
       return <Redirect to="/" />;
     }
   }
+
   return <Loader />;
 }
 

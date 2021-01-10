@@ -6,11 +6,18 @@ import {
   Switch,
 } from "react-router-dom";
 
+import styled from "styled-components";
+
 import { Home, Welcome } from "./route/route";
 
-function Loading() {
-  return <span>Loading</span>;
-}
+import Loader from "./utils/loading";
+
+const Loading = styled(Loader)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
 
 function App() {
   return (
