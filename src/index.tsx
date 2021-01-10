@@ -10,7 +10,7 @@ import cache from "./cache";
 const ApolloAddress =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000/graphql"
-    : process.env.APOLLO_URL || "http://localhost:4000/graphql";
+    : process.env.REACT_APP_APOLLO_URL || "http://localhost:4000/graphql";
 
 const client = new ApolloClient({
   cache,
