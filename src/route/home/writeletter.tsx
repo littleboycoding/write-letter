@@ -19,7 +19,7 @@ const WriteForm = styled.form`
     resize: none;
     margin: 10px 0;
     border: 1px solid #ddd;
-    font-size: 1.3em;
+    font-size: 1.1em;
     background-color: ${(props) => props.theme.textBox};
     border-radius: 3px;
     border: 1px solid #aaa;

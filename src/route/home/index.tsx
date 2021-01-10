@@ -30,23 +30,32 @@ import ReactLoading from "react-loading";
 const Container = styled.div`
   color: ${(props) => props.theme.color};
   display: grid;
-  grid-template-rows: [container-start header-start] 50px [header-end letter-start] 1fr [letter-end footer-start] 50px [footer-end container-end];
+  grid-template-rows: [container-start header-start] min-content [header-end letter-start] 1fr [letter-end footer-start] 50px [footer-end container-end];
   height: 100vh;
 `;
 
 const Header = styled.div`
   background-color: ${(props) => props.theme.bar};
-  padding: 15px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-weight: bold;
   font-size: calc(0.4vw + 1vh + 2.75px);
+  flex-wrap: wrap;
 
   @media only screen and (max-width: 800px) {
     font-size: calc(1vw + 1vh + 3px);
     span:first-child {
       display: none;
+    }
+
+    & {
+      justify-content: center;
+    }
+
+    & > * {
+      margin: 5px;
     }
   }
 `;
@@ -139,10 +148,15 @@ const User = styled.div`
 
   &:hover {
     background-color: ${(props) => props.theme.buttonHover};
-    cursor: pointer;
     transition: background-color 0.3s;
+    cursor: pointer;
     padding: 5px 10px;
     border-radius: 3px;
+  }
+
+  &:hover > a {
+    color: white;
+    transition: color 0.3s;
   }
 `;
 
