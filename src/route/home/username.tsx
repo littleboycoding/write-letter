@@ -33,6 +33,7 @@ const NameForm = styled.form`
 
   input {
     width: 200px;
+    background-color: ${(props) => props.theme.textBox};
   }
 `;
 

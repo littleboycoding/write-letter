@@ -19,13 +19,52 @@ const WriteForm = styled.form`
     resize: none;
     margin: 10px 0;
     border: 1px solid #ddd;
+    font-size: 1.3em;
+    background-color: ${(props) => props.theme.textBox};
+    border-radius: 3px;
+    border: 1px solid #aaa;
   }
 `;
+
+const HashtagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  overflow: hidden;
+
+  .hashtag {
+    white-space: wrap;
+    word-break: break-all;
+    margin: 5px 10px 10px 0px;
+    background-color: #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    color: black;
+  }
+`;
+
+function HashtagListStyled({ content }: { content: string }) {
+  const hashtags = Array.from(
+    new Set(content.match(/(?<=( |^))#(.*?)(?=( |$))/g) || [])
+  );
+
+  return (
+    <HashtagList>
+      {hashtags.map((hashtag) => (
+        <div key={hashtag} className="hashtag">
+          {hashtag}
+        </div>
+      ))}
+    </HashtagList>
+  );
+}
 
 const WriteButtonContainer = styled.div`
   display: grid;
   grid-template-columns: [post-start] 1fr [post-end paper-start] 1fr [paper-end];
   grid-gap: 15px;
+  margin-top: 10px;
 `;
 
 const WriteButton = styled.button.attrs(() => ({
@@ -171,6 +210,7 @@ function WriteFormStyled() {
         placeholder="Write anything you want"
         disabled={loading}
       />
+      <HashtagListStyled content={content} />
       <WriteButtonContainer>
         <WriteButton
           name="post"

@@ -5,7 +5,7 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         getLetters: {
-          keyArgs: false,
+          keyArgs: ["hashtag"],
           merge(existing, incoming) {
             const letters: Reference[] = existing
               ? [...existing.letters, ...incoming.letters]

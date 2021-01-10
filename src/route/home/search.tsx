@@ -13,6 +13,8 @@ import styled from "styled-components";
 
 import { Redirect } from "react-router-dom";
 
+import Loader from "../../utils/loading";
+
 const GET_PAPER_PLANE = gql`
   query GET_PAPER_PLANE {
     getPaperPlane {
@@ -29,7 +31,7 @@ const GET_PAPER_PLANE = gql`
 const NoPaperPlane = styled.div`
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: 1fr 80px;
+  grid-template-rows: 1fr 100px;
   justify-items: center;
   align-items: center;
   font-size: calc(1vw + 1vh + 10px);
@@ -42,7 +44,16 @@ const NoPaperPlane = styled.div`
 
   span.research {
     grid-column: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-size: 0.7em;
+    margin-top: 15px;
+    padding: 20px;
+  }
+
+  span.research svg {
+    margin: 10px;
   }
 `;
 
@@ -69,7 +80,9 @@ function Search() {
       <NoPaperPlane>
         <FontAwesomeIcon icon={faPaperPlane} />
         <span>Catching paper plane from stranger</span>
-        <span className="research">Looking for it ...</span>
+        <span className="research">
+          Looking for it <Loader />
+        </span>
       </NoPaperPlane>
     );
   } else if (error) {

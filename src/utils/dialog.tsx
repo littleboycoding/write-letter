@@ -44,7 +44,7 @@ const DialogBackground = styled.div`
   width: 100%;
   height: 100%;
   z-index: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.55);
 `;
 
 const Dialog = styled.div`
@@ -63,12 +63,13 @@ const Dialog = styled.div`
 
   div.inner {
     max-width: 100%;
-    padding: 10px;
+    padding: 15px;
     border-radius: 10px;
-    background-color: white;
+    background-color: ${(props) => props.theme.letterInfo};
   }
 
   div.inner > * {
+    max-width: 100%;
     box-sizing: border-box;
   }
 `;

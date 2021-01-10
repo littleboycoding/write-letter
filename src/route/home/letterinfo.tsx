@@ -12,6 +12,8 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 import FormatDate from "../../utils/formatDate";
 
+import Loader from "../../utils/loading";
+
 const FETCH_MORE_COMMENTS = gql`
   query FETCH_MORE_COMMENTS($cursor: ID, $id: ID!) {
     getLetter(id: $id) {
@@ -91,7 +93,7 @@ const InfoContainer = styled.div`
     text-transform: uppercase;
 
     svg {
-      color: #555;
+      opacity: 0.5;
     }
   }
 
@@ -107,6 +109,13 @@ const InfoContainer = styled.div`
     resize: none;
     padding: 10px;
     border-radius: 3px;
+    font-size: 0.9em;
+    background-color: ${(props) => props.theme.textBox};
+    border: 1px solid #aaa;
+  }
+
+  @media only screen and (max-width: 800px) {
+    font-size: calc(0.6vw + 0.9vh + 5px);
   }
 `;
 
@@ -140,7 +149,7 @@ function InfoContainerStyled({
   loadMore?: () => void;
 }): JSX.Element {
   const [comment, commentSetter] = useState<string>("");
-  const [write] = useMutation<
+  const [write, { loading }] = useMutation<
     WRITE_COMMENT_TYPES.WRITE_COMMENT,
     WRITE_COMMENT_TYPES.WRITE_COMMENTVariables
   >(WRITE_COMMENT, {
@@ -198,14 +207,16 @@ function InfoContainerStyled({
       <p>{data.content}</p>
       {data.method === "post" && "getComments" in data && (
         <>
+          <HashtagListStyled content={data.content} />
           <textarea
+            disabled={loading}
             value={comment}
             onChange={onCommentChange}
             rows={4}
             maxLength={250}
             placeholder="Write some comment . . ."
           ></textarea>
-          <CommentButton disabled={!comment} onClick={onCommented}>
+          <CommentButton disabled={!comment || loading} onClick={onCommented}>
             Comment
           </CommentButton>
           <LetterCommentContainerStyled comments={data.getComments} />
@@ -215,6 +226,40 @@ function InfoContainerStyled({
         </>
       )}
     </InfoContainer>
+  );
+}
+
+const HashtagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  overflow: hidden;
+  color: black;
+
+  .hashtag {
+    white-space: wrap;
+    word-break: break-all;
+    margin: 10px 10px 10px 0px;
+    background-color: #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.8em;
+  }
+`;
+
+function HashtagListStyled({ content }: { content: string }) {
+  const hashtags = Array.from(
+    new Set(content.match(/(?<=( |^))#(.*?)(?=( |$))/g) || [])
+  );
+
+  return (
+    <HashtagList>
+      {hashtags.map((hashtag) => (
+        <div key={hashtag} className="hashtag">
+          {hashtag}
+        </div>
+      ))}
+    </HashtagList>
   );
 }
 
@@ -235,8 +280,8 @@ const MoreButton = styled.button`
 
 const LetterComment = styled.div`
   padding: 10px;
-  background-color: #f2f2f2;
-  border: 1px solid #ddd;
+  background-color: ${(props) => props.theme.comment};
+  border: 1px solid ${(props) => props.theme.commentBorder};
   border-radius: 3px;
   margin: 10px 0;
   word-break: break-all;
@@ -301,7 +346,7 @@ function LetterInfo() {
       return <Redirect to="/" />;
     }
   }
-  return <span>Loading</span>;
+  return <Loader />;
 }
 
 export default LetterInfo;

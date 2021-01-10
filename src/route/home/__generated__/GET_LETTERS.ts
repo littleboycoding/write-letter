@@ -30,4 +30,5 @@ export interface GET_LETTERS {
 export interface GET_LETTERSVariables {
   cursor?: string | null;
   limit?: number | null;
+  hashtag?: string | null;
 }

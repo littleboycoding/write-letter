@@ -23,6 +23,7 @@ const FadeInKeyframes = keyframes`
 const WelcomeStyled = styled.div`
   display: flex;
   height: 100vh;
+  padding: 0px 15px;
 
   align-items: center;
   justify-content: center;
@@ -37,7 +38,9 @@ const WelcomeStyled = styled.div`
   }
 `;
 
-const Hint = styled.span``;
+const Hint = styled.span`
+  font-size: 0.8em;
+`;
 
 const Form = styled.form`
   animation: ${FadeInKeyframes} 2s;
@@ -47,6 +50,25 @@ const Form = styled.form`
 
   & > * {
     margin: 6px;
+  }
+`;
+
+const StartButton = styled.input.attrs(() => ({
+  type: "button",
+}))`
+  margin-top: 25px;
+  padding: 10px 15px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s;
+  font-size: 0.6em;
+
+  &:hover {
+    background-color: #666;
+    transition: all 0.3s;
+    cursor: pointer;
   }
 `;
 
@@ -67,6 +89,10 @@ const SubmitButton = styled.input.attrs(() => ({
   }
 `;
 
+interface PageProps {
+  pageSetter: (c: number) => any;
+}
+
 const NameTextbox = styled.input.attrs(() => ({
   type: "text",
   placeholder: "Anonymous",
@@ -77,8 +103,20 @@ const NameTextbox = styled.input.attrs(() => ({
 `;
 
 function Welcome() {
-  const [name, nameSetter] = useState<string>("");
+  const [page, pageSetter] = useState<number>(0);
+
+  if (window.localStorage.getItem("username")) return <Redirect to="/" />;
+
+  const pageArray = [
+    <FirstSlide pageSetter={(c) => pageSetter(page + c)} />,
+    <SecondSlide pageSetter={(c) => pageSetter(page + c)} />,
+  ];
+
+  return <WelcomeStyled>{pageArray[page]}</WelcomeStyled>;
+}
+function SecondSlide(props: PageProps) {
   const history = useHistory();
+  const [name, nameSetter] = useState<string>("");
 
   function onNameChange(event: ChangeEvent<HTMLInputElement>) {
     nameSetter(event.target.value);
@@ -90,18 +128,37 @@ function Welcome() {
 
     event.preventDefault();
   }
-
-  if (window.localStorage.getItem("username")) return <Redirect to="/" />;
-
   return (
-    <WelcomeStyled>
-      <span className="welcome_title">Welcome to Write Letter</span>
+    <>
       <Form onSubmit={onSubmit}>
-        <Hint>Tell us your name (you don't have to)</Hint>
+        <span className="welcome_title">Choose your name</span>
+        <Hint>choose whatever name you like, this will show publicly</Hint>
         <NameTextbox value={name} onChange={onNameChange} />
         <SubmitButton value={name === "" ? "Continue as anonymous" : "Enter"} />
       </Form>
-    </WelcomeStyled>
+    </>
+  );
+}
+
+const TitleBlock = styled.div`
+  display: inline-block;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+`;
+
+function FirstSlide({ pageSetter }: PageProps) {
+  return (
+    <>
+      {/* <span className="welcome_title">Choose your name</span> */}
+      <h1 className="welcome_title">
+        Welcome to <TitleBlock>Write Letter</TitleBlock>
+      </h1>
+      <p>Write Letter is where you can write anything openly and anonymously</p>
+      <Hint>Choose your name to get start, no sign up required.</Hint>
+      <StartButton value="Get Started" onClick={() => pageSetter(1)} />
+    </>
   );
 }
 

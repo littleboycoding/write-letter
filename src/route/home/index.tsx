@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React, { ChangeEvent, useState } from "react";
+import styled, { ThemeProvider } from "styled-components";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 
 import DialogContainer from "../../utils/dialog";
@@ -11,8 +11,10 @@ import Search from "./search";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faMoon,
   faPaperPlane,
   faPencilAlt,
+  faSun,
   faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -23,15 +25,17 @@ import * as GET_LETTERS_TYPES from "./__generated__/GET_LETTERS";
 import LetterInfo from "./letterinfo";
 import backgroundExample from "../../backgroundExample.jpg";
 
+import ReactLoading from "react-loading";
+
 const Container = styled.div`
+  color: ${(props) => props.theme.color};
   display: grid;
   grid-template-rows: [container-start header-start] 50px [header-end letter-start] 1fr [letter-end footer-start] 50px [footer-end container-end];
   height: 100vh;
 `;
 
 const Header = styled.div`
-  background-color: black;
-  color: white;
+  background-color: ${(props) => props.theme.bar};
   padding: 15px;
   display: flex;
   align-items: center;
@@ -51,16 +55,16 @@ const Title = styled.span``;
 const Button = styled(FontAwesomeIcon).attrs(({ icon }) => ({
   icon,
 }))`
-  background-color: #444;
+  background-color: ${(props) => props.theme.button};
   border: none;
-  padding: 5px 10px;
+  padding: 7px 10px;
   border-radius: 3px;
   color: white;
   transition: all 0.3s;
   margin: 0 5px;
 
   &:hover {
-    background-color: #666;
+    background-color: ${(props) => props.theme.buttonHover};
     transition: all 0.3s;
     cursor: pointer;
   }
@@ -74,8 +78,8 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
 
-  background-color: #ccc;
   // background-image: url(${backgroundExample});
+  background-color: ${(props) => props.theme.background};
   background-size: cover;
 `;
 
@@ -99,8 +103,8 @@ const Letter = styled.div`
   min-height: 150px;
   border-radius: 5px;
   font-size: 1.1em;
-  background-color: rgba(255, 255, 255, 0.9);
-  background-color: #fff;
+  background-color: ${(props) => props.theme.letter};
+  color: ${(props) => props.theme.color};
 
   word-wrap: break-word;
 
@@ -121,7 +125,7 @@ const Letter = styled.div`
   }
 
   &:hover {
-    background-color: #eee;
+    background-color: ${(props) => props.theme.letterHover};
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -129,12 +133,12 @@ const Letter = styled.div`
 
 const User = styled.div`
   a {
-    color: white;
+    color: ${(props) => props.theme.color};
     text-decoration: none;
   }
 
   &:hover {
-    background-color: #666;
+    background-color: ${(props) => props.theme.buttonHover};
     cursor: pointer;
     transition: background-color 0.3s;
     padding: 5px 10px;
@@ -166,15 +170,15 @@ const MoreButton = styled.button`
   margin: 10px 0px 20px 0px;
 
   &:hover {
-    background-color: #555;
+    background-color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
   }
 `;
 
 const GET_LETTERS = gql`
-  query GET_LETTERS($cursor: ID, $limit: Int) {
-    getLetters(cursor: $cursor, limit: $limit) {
+  query GET_LETTERS($cursor: ID, $limit: Int, $hashtag: String) {
+    getLetters(cursor: $cursor, limit: $limit, hashtag: $hashtag) {
       cursor
       limit
       hasMore
@@ -190,8 +194,10 @@ const GET_LETTERS = gql`
 
 function LetterStyled({
   data,
+  hashtag,
 }: {
   data: GET_LETTERS_TYPES.GET_LETTERS_getLetters;
+  hashtag: string;
 }): JSX.Element {
   const { letters } = data;
 
@@ -220,19 +226,48 @@ function LetterStyled({
         }
       )
     ) : (
-      <span>No one write any letter yet !</span>
+      <BackMessage>
+        {!hashtag
+          ? "No one write any letter yet !"
+          : "No letter with matched hashtags"}
+      </BackMessage>
     );
 
   return <>{LetterList}</>;
 }
 
+const BackMessage = styled.span`
+  opacity: 0.4;
+  margin-top: 10px;
+  font-family: monospace;
+  font-size: 3.2vw;
+  grid-column: 1 / end;
+  grid-row: 1 / end;
+  justify-self: center;
+  align-self: center;
+`;
+
 const Footer = styled.div`
-  background-color: black;
-  color: white;
+  background-color: ${(props) => props.theme.bar};
   display: flex;
   align-items: center;
   padding: 0px 10px;
   font-size: calc(0.5vw + 1.1vh);
+  justify-content: space-between;
+
+  button {
+    background-color: transparent;
+    color: ${(props) => props.theme.color};
+    border: none;
+    font-size: 1em;
+    transition: all 0.1s;
+  }
+
+  button:hover {
+    cursor: pointer;
+    font-size: 1.05em;
+    transition: all 0.1s;
+  }
 `;
 
 function DialogSwitch() {
@@ -274,7 +309,56 @@ function DialogSwitch() {
   );
 }
 
+const NavBT = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const HashtagSearch = styled.input.attrs(() => ({
+  type: "text",
+  placeholder: "Search by hashtag",
+}))`
+  padding: 5px;
+  border-radius: 3px;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  height: 100%;
+  font-size: 0.8em;
+  background-color: ${(props) => props.theme.textBox};
+  border: 1px solid #aaa;
+`;
+
+const DarkTheme = {
+  bar: "black",
+  background: "#555",
+  color: "white",
+  letter: "rgba(50, 50, 50, 0.8)",
+  letterInfo: "rgba(50, 50, 50)",
+  letterHover: "rgba(30, 30, 30, 0.8)",
+  button: "#444",
+  buttonHover: "#666",
+  comment: "#555",
+  commentBorder: "#888",
+  textBox: "#eee",
+};
+
+const LightTheme = {
+  bar: "white",
+  background: "#ccc",
+  color: "black",
+  letter: "rgba(255, 255, 255, 1)",
+  letterInfo: "rgba(255, 255, 255)",
+  letterHover: "rgba(230, 230, 230, 0.8)",
+  button: "#444",
+  buttonHover: "#666",
+  comment: "#efefef",
+  commentBorder: "#aaa",
+  textBox: "#eee",
+};
+
 function Home() {
+  const [hashtag, hashtagSetter] = useState<string>("");
   const { data, loading, error, fetchMore } = useQuery<
     GET_LETTERS_TYPES.GET_LETTERS,
     GET_LETTERS_TYPES.GET_LETTERSVariables
@@ -282,8 +366,20 @@ function Home() {
     variables: {
       cursor: null,
       limit: 10,
+      hashtag,
     },
   });
+  const [theme, themeSetter] = useState(
+    window.localStorage.getItem("theme") || "light"
+  );
+
+  // useEffect(() => {
+  //   const timer = setTimeout(
+  //     () => refetch({ hashtag, cursor: null, limit: 10 }),
+  //     500
+  //   );
+  //   return () => clearTimeout(timer);
+  // }, [hashtag, refetch]);
 
   if (error) return <span>{error.message}</span>;
 
@@ -298,35 +394,60 @@ function Home() {
     });
   }
 
+  function onHashtagChange(event: ChangeEvent<HTMLInputElement>) {
+    hashtagSetter(event.target.value);
+  }
+
+  function themeSwap() {
+    if (window.localStorage.getItem("theme") !== "dark") {
+      window.localStorage.setItem("theme", "dark");
+      themeSetter("dark");
+    } else {
+      window.localStorage.setItem("theme", "light");
+      themeSetter("light");
+    }
+  }
+
   return (
-    <Container>
-      <Header>
-        <Title>Write Letter</Title>
-        <UserStyled />
-        <div>
-          <Link to="/search">
-            <Button icon={faPaperPlane} />
-          </Link>
-          <Link to="/write">
-            <Button icon={faPencilAlt} />
-          </Link>
-        </div>
-      </Header>
-      <Content>
-        <LetterContainer>
-          {!loading && data ? (
-            <LetterStyled data={data.getLetters} />
-          ) : (
-            <span>Loading</span>
+    <ThemeProvider theme={theme !== "dark" ? LightTheme : DarkTheme}>
+      <Container>
+        <Header>
+          <Title>Write Letter</Title>
+          <UserStyled />
+          <NavBT>
+            <HashtagSearch value={hashtag} onChange={onHashtagChange} />
+            <Link to="/search">
+              <Button icon={faPaperPlane} />
+            </Link>
+            <Link to="/write">
+              <Button icon={faPencilAlt} />
+            </Link>
+          </NavBT>
+        </Header>
+        <Content>
+          <LetterContainer>
+            {!loading && data ? (
+              <LetterStyled hashtag={hashtag} data={data.getLetters} />
+            ) : (
+              <div style={{ gridColumn: "1 / end", justifySelf: "center" }}>
+                <ReactLoading />
+              </div>
+            )}
+          </LetterContainer>
+          {!loading && data?.getLetters?.hasMore && (
+            <MoreButton onClick={loadMore}>More</MoreButton>
           )}
-        </LetterContainer>
-        {!loading && data?.getLetters?.hasMore && (
-          <MoreButton onClick={loadMore}>More</MoreButton>
-        )}
-      </Content>
-      <Footer>Made by @littleboycoding, deployed to DigitalOcean 🐳</Footer>
-      <DialogSwitch />
-    </Container>
+        </Content>
+        <Footer>
+          Made by @littleboycoding, deployed to DigitalOcean 🐳{" "}
+          <button onClick={themeSwap}>
+            {theme === "light" ? "Light mode " : "Dark Mode "}
+            <FontAwesomeIcon icon={theme === "light" ? faSun : faMoon} />
+          </button>
+        </Footer>
+        <DialogSwitch />
+      </Container>
+    </ThemeProvider>
   );
 }
 
