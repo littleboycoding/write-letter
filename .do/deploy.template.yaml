@@ -6,6 +6,6 @@ spec:
        branch: master
        repo_clone_url: https://github.com/littleboycoding/write-letter.git
      envs:
-       - key: APOLLO_URL
+       - key: REACT_APP_APOLLO_URL
          scope: BUILD_TIME
      catchall_document: index.html
